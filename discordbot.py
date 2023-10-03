@@ -9,6 +9,11 @@ intents.members = True
 bot = discord.Client(intents=intents)
 
 @bot.event
+async def on_ready():
+    print("------------------------------------------------------------")
+    print(f"Your bot is now online -(Logged in as {bot.user})")
+
+@bot.event
 async def on_member_join(member):
     guild = member.guild
     for channel in guild.text_channels:
