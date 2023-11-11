@@ -28,6 +28,29 @@ GUILD_IDS = (
     else nextcord.utils.MISSING
 )
 
+@bot.event
+async def on_member_join(member):
+    guild = member.guild
+    channel_name = "welcome"  # Replace with your channel name
+
+    # Find the specific channel by name
+    channel = nextcord.utils.get(guild.text_channels, name=channel_name)
+
+    if channel and channel.permissions_for(guild.me).send_messages:
+        await channel.send(f"สวัสดีครับ {member.mention} ให้ผมนั่งคุยเป็นเพื่อนได้ไหมครับ")
+
+
+@bot.event
+async def on_member_remove(member):
+    guild = member.guild
+    channel_name = "welcome"  # Replace with your channel name
+
+    # Find the specific channel by name
+    channel = nextcord.utils.get(guild.text_channels, name=channel_name)
+
+    if channel and channel.permissions_for(guild.me).send_messages:
+        await channel.send(f"ลาก่อนครับ {member.display_name}, หวังว่าจะได้พบกันอีกครั้งในอนาคต")
+
 @bot.slash_command(name="play", description="Play Wordle Clone", guild_ids=GUILD_IDS)
 async def slash_play(interaction: nextcord.Interaction):
     """คำสั่งสำหรับเล่นเกม"""
