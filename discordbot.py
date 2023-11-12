@@ -196,4 +196,34 @@ def determine_winner(player_hand, bot_hand):
         return 'เสมอ!'
 
 
+@bot.command(name='start', help='Start a guessing game')
+async def start_guessing_game(ctx):
+    await ctx.send("ยินดีต้อนรับเข้าสู่เกมส์เดาตัวเลข! เราได้สุ่มตัวเลขเพียง 1 ตัวจากตัวเลข 1 ถึง 100. ลองเดาตัวเลขนั้นดูสิ!")
+
+    # สุ่มสร้างเลข 1 ตัวจากเลข 1 ถึง 100
+    secretnumber = random.randint(1, 100)
+
+    # ให้ผู้เล่นสุ่มคำตอบได้ 7 ครั้ง
+    for  in range(7):
+        guess = await prompt_for_guess(ctx)
+        if guess == secret_number:
+            await ctx.send(f"ยินดีด้วย! เดาได้ถูกต้อง ตัวเลขนัั้นคือ : {secret_number}")
+            break
+        elif guess < secret_number:
+            await ctx.send("ต่ำไปนะ! ลองเดาอีกที")
+        else:
+            await ctx.send("สูงไปนะ! ลองเดาอีกที")
+    else:
+        await ctx.send(f"โชคไม่ดีเลย หมดโอกาสแล้ว. เลขที่ถูกต้องคือ {secret_number}.")
+
+async def prompt_for_guess(ctx):
+    await ctx.send("ตัวเลขนี้อยู่ระหว่าง 1 ถึง 100:")
+    try:
+        guess = await bot.wait_for('message', timeout=30, check=lambda m: m.author == ctx.author)
+        return int(guess.content)
+    except (nextcord.ext.commands.errors.CommandNotFound, ValueError):
+        await ctx.send('อย่าใส่มั่วสิ. ใส่ตัวเลขลงไปสิ')
+        return await prompt_for_guess(ctx)
+
+
 bot.run(os.getenv("TOKEN"))
