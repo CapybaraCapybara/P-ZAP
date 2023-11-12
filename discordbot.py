@@ -2,6 +2,8 @@
 import logging
 import os
 from typing import Optional
+import random
+import asyncio
 
 import nextcord
 from dotenv import load_dotenv
@@ -125,5 +127,73 @@ async def on_message(message: nextcord.Message):
     processed_as_guess = await process_message_as_guess(bot, message)
     if not processed_as_guess:
         await bot.process_commands(message)
+
+@bot.command(name='bj', help='เล่นแบล็กแจ็คกับบอท')
+async def play_blackjack(ctx):
+    deck = create_deck()
+    player_hand = [draw_card(deck), draw_card(deck)]
+    bot_hand = [draw_card(deck), draw_card(deck)]
+
+    await ctx.send(f'ไพ่ของคุณ: {[card["rank"] for card in player_hand]}')
+    await ctx.send(f"ไพ่บอท: {bot_hand[0]['rank']} และหมอบไว้อีก 1 ใบ.")
+
+    while sum(get_card_value(card) for card in player_hand) < 21:
+        hit_or_stand = await prompt_for_hit_or_stand(ctx)
+        if hit_or_stand.lower() == 'hit':
+            player_hand.append(draw_card(deck))
+            await ctx.send(f'ไพ่ของคุณ: {[card["rank"] for card in player_hand]}')
+        else:
+            break
+
+    while sum(get_card_value(card) for card in bot_hand) < 17:
+        bot_hand.append(draw_card(deck))
+
+    await ctx.send(f'ไพ่บอท: {[card["rank"] for card in bot_hand]}')
+
+    result = determine_winner(player_hand, bot_hand)
+    await ctx.send(result)
+
+def create_deck():
+    ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+    suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
+    deck = [{'rank': rank, 'suit': suit} for rank in ranks for suit in suits]
+    random.shuffle(deck)
+    return deck
+
+def draw_card(deck):
+    return deck.pop()
+
+async def prompt_for_hit_or_stand(ctx):
+    await ctx.send('คุณต้องการที่จะ hit หรือ stand? พิมพ์ `hit` หรือ `stand`.')
+    try:
+        response = await bot.wait_for('message', timeout=30, check=lambda m: m.author == ctx.author and m.content.lower() in ['hit', 'stand'])
+        return response.content.lower()
+    except asyncio.TimeoutError:
+        await ctx.send('หมดเวลา, คุณเลือก stand')
+        return 'stand'
+
+def get_card_value(card):
+    if card["rank"].isdigit():
+        return int(card["rank"])
+    elif card["rank"] in ['J', 'Q', 'K']:
+        return 10
+    elif card["rank"] == 'A':
+        return 11
+
+def determine_winner(player_hand, bot_hand):
+    player_sum = sum(get_card_value(card) for card in player_hand)
+    bot_sum = sum(get_card_value(card) for card in bot_hand)
+
+    if player_sum > 21:
+        return 'คุณแต้มเกิน! บอทชนะ'
+    elif bot_sum > 21:
+        return 'บอทแต้มเกิน! คุณชนะ'
+    elif player_sum > bot_sum:
+        return 'คุณชนะ!'
+    elif player_sum < bot_sum:
+        return 'บอทชนะ'
+    else:
+        return 'เสมอ!'
+
 
 bot.run(os.getenv("TOKEN"))
