@@ -51,6 +51,22 @@ async def on_member_remove(member):
     if channel and channel.permissions_for(guild.me).send_messages:
         await channel.send(f"ลาก่อนครับ {member.display_name}, หวังว่าจะได้พบกันอีกครั้งในอนาคต")
 
+@bot.event
+async def on_voice_state_update(member, before, after):
+    """แจ้งเตือนเมื่อคนเข้าออกช่องพูดคุย"""
+    guild = member.guild
+    channel_name = "vc-log"  #เปลี่ยนเป็นชื่อตาม Text channel ที่ต้องการส่ง
+    channel = nextcord.utils.get(guild.text_channels, name=channel_name)
+    voicechannel = bot.get_channel(1173175465113038918) #เปลี่ยนเลขตาม Voice Channel ID
+
+    if before.channel != after.channel:
+        if after.channel is not None and after.channel.id == 1173175465113038918: #เปลี่ยนเลขตาม Voice Channel ID
+            await channel.send(f"{member.name} ได้เข้ามาสู่ {voicechannel.name}")
+    if before.channel != after.channel:
+        if before.channel is not None and before.channel.id == 1173175465113038918: #เปลี่ยนเลขตาม Voice Channel ID
+            await channel.send(f"{member.name} ได้ออกจาก {voicechannel.name}")
+
+
 @bot.slash_command(name="play", description="Play Wordle Clone", guild_ids=GUILD_IDS)
 async def slash_play(interaction: nextcord.Interaction):
     """คำสั่งสำหรับเล่นเกม"""
