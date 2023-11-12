@@ -219,7 +219,7 @@ def determine_winner(player_hand, bot_hand):
 
 # ========================================== ระบบเกมทายเลข ==========================================
 
-@bot.command(name='start', help='Start a guessing game')
+@bot.command(name='gnum', help='เล่นเกมทายตัวเลข')
 async def start_guessing_game(ctx):
     """เกมทายเลข"""
     await ctx.send("ยินดีต้อนรับเข้าสู่เกมส์เดาตัวเลข! เราได้สุ่มตัวเลขเพียง 1 ตัวจากตัวเลข 1 ถึง 100. ลองเดาตัวเลขนั้นดูสิ!")
@@ -231,7 +231,7 @@ async def start_guessing_game(ctx):
     for _ in range(7):
         guess = await prompt_for_guess(ctx)
         if guess == secret_number:
-            await ctx.send(f"ยินดีด้วย! เดาได้ถูกต้อง ตัวเลขนัั้นคือ : {secret_number}")
+            await ctx.send(f"ยินดีด้วย! เดาได้ถูกต้อง ตัวเลขนั้นคือ : {secret_number}")
             break
         elif guess < secret_number:
             await ctx.send("ต่ำไปนะ! ลองเดาอีกที")
@@ -253,7 +253,7 @@ async def prompt_for_guess(ctx):
 
 # ========================================== ระบบเกมเป่ายิงฉุบ ==========================================
 
-@bot.command(name='rps')
+@bot.command(name='rps', help="เกมเป่ายิ้งฉุบ")
 async def rock_paper_scissors(ctx, user_choice):
     """เกมเป่ายิงฉุบ"""
     user_choice = user_choice.lower()
