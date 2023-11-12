@@ -80,28 +80,28 @@ async def on_voice_state_update(member, before, after):
 
 # ========================================== ระบบเกม Wordle ==========================================
 
-@bot.slash_command(name="play", description="Play Wordle Clone", guild_ids=GUILD_IDS)
+@bot.slash_command(name="play", description="เล่น Wordle", guild_ids=GUILD_IDS)
 async def slash_play(interaction: nextcord.Interaction):
     """คำสั่งสำหรับเล่นเกม"""
     pass
 
 
-@slash_play.subcommand(name="random", description="Play a random game of Wordle Clone")
+@slash_play.subcommand(name="random", description="เล่น Wordle แบบสุ่ม")
 async def slash_play_random(interaction: nextcord.Interaction):
     """/play random"""
     embed = generate_puzzle_embed(interaction.user, random_puzzle_id())
     await interaction.send(embed=embed)
 
-@slash_play.subcommand(name="daily", description="Play the daily game of Wordle Clone")
+@slash_play.subcommand(name="daily", description="เล่น Wordle แบบรายวัน")
 async def slash_play_daily(interaction: nextcord.Interaction):
     """/play daily"""
     embed = generate_puzzle_embed(interaction.user, daily_puzzle_id())
     await interaction.send(embed=embed)
 
-@slash_play.subcommand(name="id", description="Play a game of Wordle Clone by its ID")
+@slash_play.subcommand(name="id", description="เล่น Wordle โดยการใส่ ID")
 async def slash_play_id(
     interaction: nextcord.Interaction,
-    puzzle_id: int = nextcord.SlashOption(description="Puzzle ID of the word to guess"),
+    puzzle_id: int = nextcord.SlashOption(description="ใส่เลข ID ของคำเพื่อทาย"),
 ):
     """/play id"""
     embed = generate_puzzle_embed(interaction.user, puzzle_id)
