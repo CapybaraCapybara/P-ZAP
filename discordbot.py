@@ -44,9 +44,10 @@ async def on_member_join(member):
     guild = member.guild
     channel_name = "welcome"  #เปลี่ยนเป็นชื่อตาม Text channel ที่ต้องการส่ง
     channel = nextcord.utils.get(guild.text_channels, name=channel_name)
-
     if channel and channel.permissions_for(guild.me).send_messages:
-        await channel.send(f"สวัสดีครับ {member.mention} ให้ผมนั่งคุยเป็นเพื่อนได้ไหมครับ")
+        embed = nextcord.Embed(title=f" Welcome {member} 🎉!", description=f"ยินดีต้อนรับ {member.mention} \n เข้าสู่ {guild.name} \n ขอให้มีความสุขกับดิสคอร์ดแห่งนี้นะ!", color=0x00d9ff)
+        embed.set_thumbnail(member.display_avatar)
+        await channel.send(embed=embed)
 
 
 @bot.event
@@ -57,7 +58,9 @@ async def on_member_remove(member):
     channel = nextcord.utils.get(guild.text_channels, name=channel_name)
 
     if channel and channel.permissions_for(guild.me).send_messages:
-        await channel.send(f"ลาก่อนครับ {member.display_name}, หวังว่าจะได้พบกันอีกครั้งในอนาคต")
+        embed = nextcord.Embed(title=f" Goodbye {member} 👋!", description=f"ลาก่อน  {member.mention} \n ขอบคุณที่เข้ามา แล้วไว้เจอกันใหม่นะ!", color=0xff0000)
+        embed.set_thumbnail(member.display_avatar)
+        await channel.send(embed=embed)
 
 @bot.event
 async def on_voice_state_update(member, before, after):
