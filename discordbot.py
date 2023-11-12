@@ -18,6 +18,7 @@ from utils import (
 
 intents = nextcord.Intents.default()
 intents.members = True
+intents.message_content = True
 logging.basicConfig(level=logging.INFO)
 
 load_dotenv()
@@ -25,6 +26,8 @@ load_dotenv()
 activity = nextcord.Activity(type=nextcord.ActivityType.listening, name="/play")
 
 bot = commands.Bot(command_prefix=commands.when_mentioned_or("w?"), activity=activity, intents=intents)
+bot = commands.Bot(command_prefix="/", intents=intents)
+
 
 GUILD_IDS = (
     [int(guild_id) for guild_id in os.getenv("GUILD_IDS", "").split(",")]
@@ -195,16 +198,15 @@ def determine_winner(player_hand, bot_hand):
     else:
         return 'เสมอ!'
 
-
 @bot.command(name='start', help='Start a guessing game')
 async def start_guessing_game(ctx):
     await ctx.send("ยินดีต้อนรับเข้าสู่เกมส์เดาตัวเลข! เราได้สุ่มตัวเลขเพียง 1 ตัวจากตัวเลข 1 ถึง 100. ลองเดาตัวเลขนั้นดูสิ!")
 
     # สุ่มสร้างเลข 1 ตัวจากเลข 1 ถึง 100
-    secretnumber = random.randint(1, 100)
+    secret_number = random.randint(1, 100)
 
     # ให้ผู้เล่นสุ่มคำตอบได้ 7 ครั้ง
-    for  in range(7):
+    for _ in range(7):
         guess = await prompt_for_guess(ctx)
         if guess == secret_number:
             await ctx.send(f"ยินดีด้วย! เดาได้ถูกต้อง ตัวเลขนัั้นคือ : {secret_number}")
