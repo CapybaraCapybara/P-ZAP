@@ -134,7 +134,9 @@ def generate_puzzle_embed(user: nextcord.User, puzzle_id: int) -> nextcord.Embed
     return embed
 
 def update_embed(embed: nextcord.Embed, guess: str) -> nextcord.Embed:
-    """อัปเดตคำศัพท์"""
+
+    #อัปเดตคำศัพท์
+
     puzzle_id = int(embed.footer.text.split()[1])
     answer = popular_words[puzzle_id]
     colored_word = generate_colored_word(guess, answer)
@@ -144,7 +146,18 @@ def update_embed(embed: nextcord.Embed, guess: str) -> nextcord.Embed:
     # เช็ค game over
     num_empty_slots = embed.description.count(empty_slot)
     if guess == answer:
-        embed.description += "\n\nเก่งมากฮ้าฟฟู่ว!"
+        if num_empty_slots == 0:
+            embed.description += "\n\nปิ้วๆๆ!"
+        if num_empty_slots == 1:
+            embed.description += "\n\nเก่งมาก!"
+        if num_empty_slots == 2:
+            embed.description += "\n\nยอดเยี่ยมมาก!"
+        if num_empty_slots == 3:
+            embed.description += "\n\nน่าประทับใจ!"
+        if num_empty_slots == 4:
+            embed.description += "\n\nมหัศจรรย์!"
+        if num_empty_slots == 5:
+            embed.description += "\n\nอัจริยะ!"
     elif num_empty_slots == 0:
         embed.description += f"\n\nคำตอบคือ {answer}!"
     return embed
