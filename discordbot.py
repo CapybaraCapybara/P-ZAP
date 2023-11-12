@@ -13,6 +13,7 @@ from utils import (
     random_puzzle_id,
     daily_puzzle_id
 )
+
 intents = nextcord.Intents.default()
 intents.members = True
 logging.basicConfig(level=logging.INFO)
@@ -31,10 +32,9 @@ GUILD_IDS = (
 
 @bot.event
 async def on_member_join(member):
+    """แจ้งเตือนเมื่อคนเข้าเซิฟเวอร์"""
     guild = member.guild
-    channel_name = "welcome"  # Replace with your channel name
-
-    # Find the specific channel by name
+    channel_name = "welcome"  #เปลี่ยนเป็นชื่อตาม Text channel ที่ต้องการส่ง
     channel = nextcord.utils.get(guild.text_channels, name=channel_name)
 
     if channel and channel.permissions_for(guild.me).send_messages:
@@ -43,10 +43,9 @@ async def on_member_join(member):
 
 @bot.event
 async def on_member_remove(member):
+    """แจ้งเตือนเมื่อคนออกเซิร์ฟเวอร์"""
     guild = member.guild
-    channel_name = "welcome"  # Replace with your channel name
-
-    # Find the specific channel by name
+    channel_name = "welcome"  #เปลี่ยนเป็นชื่อตาม Text channel ที่ต้องการส่ง
     channel = nextcord.utils.get(guild.text_channels, name=channel_name)
 
     if channel and channel.permissions_for(guild.me).send_messages:
@@ -60,11 +59,13 @@ async def slash_play(interaction: nextcord.Interaction):
 
 @slash_play.subcommand(name="random", description="Play a random game of Wordle Clone")
 async def slash_play_random(interaction: nextcord.Interaction):
+    """/play random"""
     embed = generate_puzzle_embed(interaction.user, random_puzzle_id())
     await interaction.send(embed=embed)
 
 @slash_play.subcommand(name="daily", description="Play the daily game of Wordle Clone")
 async def slash_play_daily(interaction: nextcord.Interaction):
+    """/play daily"""
     embed = generate_puzzle_embed(interaction.user, daily_puzzle_id())
     await interaction.send(embed=embed)
 
@@ -92,9 +93,7 @@ async def play_daily(ctx: commands.Context):
 
 @bot.event
 async def on_message(message: nextcord.Message):
-
-    #วิเคราะห์ข้อความที่ส่งมา
-
+    """วิเคราะห์ข้อความที่ส่งมา"""
     processed_as_guess = await process_message_as_guess(bot, message)
     if not processed_as_guess:
         await bot.process_commands(message)

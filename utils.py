@@ -8,6 +8,7 @@ import nextcord
 popular_words = open("dict-popular.txt").read().splitlines()
 all_words = set(word.strip() for word in open("dict-sowpods.txt"))
 
+#แทนที่อักษรต่างๆด้วยอีโมจิที่เก็บไว้ในดิสคอร์ดอื่น
 EMOJI_CODES = {
     "green": {
         "a": "<:1f1e6:1162729977767284776>",
@@ -97,13 +98,10 @@ EMOJI_CODES = {
 
 
 def generate_colored_word(guess: str, answer: str) -> str:
-    
-    # สร้าง string emoji code ที่แทนที่ตัวอักษร
-
+    """สร้าง string emoji code ที่แทนที่ตัวอักษร"""
     # - อักษรเหมือนกัน, ที่เดียวกัน: Green
     # - อักษรเหมือนกัน, คนละที่: Yellow
     # - อักษรไม่เหมือนกัน: Gray
-    
     colored_word = [EMOJI_CODES["gray"][letter] for letter in guess]
     guess_letters: List[Optional[str]] = list(guess)
     answer_letters: List[Optional[str]] = list(answer)
@@ -120,16 +118,12 @@ def generate_colored_word(guess: str, answer: str) -> str:
             answer_letters[answer_letters.index(guess_letters[i])] = None
     return "".join(colored_word)
 
-
 def generate_blanks() -> str:
-    #สร้างอีโมจิปล่าวๆ 5 ตัว
+    """สร้างอีโมจิปล่าวๆ 5 ตัว"""
     return ":white_medium_square:" * 5
 
-
 def generate_puzzle_embed(user: nextcord.User, puzzle_id: int) -> nextcord.Embed:
-
-    # สร้าง embed สำหรับ puzzle อันใหม่ สำหรับ puzzle id และ user
-    
+    """สร้าง embed สำหรับ puzzle อันใหม่ สำหรับ puzzle id และ user"""
     embed = nextcord.Embed(title="Wordle Game")
     embed.description = "\n".join([generate_blanks()] * 6)
     embed.set_author(name=user.name, icon_url=user.display_avatar.url)
@@ -139,11 +133,8 @@ def generate_puzzle_embed(user: nextcord.User, puzzle_id: int) -> nextcord.Embed
     )
     return embed
 
-
 def update_embed(embed: nextcord.Embed, guess: str) -> nextcord.Embed:
-
-    #อัปเดตคำศัพท์
-
+    """อัปเดตคำศัพท์"""
     puzzle_id = int(embed.footer.text.split()[1])
     answer = popular_words[puzzle_id]
     colored_word = generate_colored_word(guess, answer)
@@ -160,22 +151,17 @@ def update_embed(embed: nextcord.Embed, guess: str) -> nextcord.Embed:
 
 
 def is_valid_word(word: str) -> bool:
-
-    # เช็คคำที่ไม่มีอยู่ในลิส
-
+    """เช็คคำที่ไม่มีอยู่ในลิส"""
     return word in all_words
 
 
 def random_puzzle_id() -> int:
-
-    #สร้างคำจาก id
-    
+    """สร้างคำจาก ID"""
     return random.randint(0, len(popular_words) - 1)
 
 
 def daily_puzzle_id() -> int:
-    
-    #สร้าง ID สำหรับ puzzle ID
+    """สร้างคำจาก Daily"""
     # คำนวนวันตั้งแต่ 1/1/2022 และ mod จำนวนของ puzzle
 
     num_words = len(popular_words)
@@ -184,17 +170,12 @@ def daily_puzzle_id() -> int:
 
 
 def is_game_over(embed: nextcord.Embed) -> bool:
-    
-    # เช็ค game over ใน embed
-
+    """เช็ค game over ใน embed"""
     return "\n\n" in embed.description
 
 
 async def process_message_as_guess(bot: nextcord.Client, message: nextcord.Message) -> bool:
-    """
-    เช็คว่า message ที่ส่งไป reply กับ Wordle bot
-    ตรวจสอบความถูกต้องและอัปเดตข้อความของบอท
-    """
+    """เช็คว่า message ที่ส่งไป reply กับ Wordle bot ตรวจสอบความถูกต้องและอัปเดตข้อความของบอท"""
     # รับ message ที่ reply
     ref = message.reference
     if not ref or not isinstance(ref.resolved, nextcord.Message):
@@ -210,7 +191,6 @@ async def process_message_as_guess(bot: nextcord.Client, message: nextcord.Messa
         return False
 
     embed = parent.embeds[0]
-
     guess = message.content.lower()
 
     # เช็คว่าใช่ผู้เล่นที่ใช่งานอยู่รึปล่าว
