@@ -224,6 +224,25 @@ async def prompt_for_guess(ctx):
     except (nextcord.ext.commands.errors.CommandNotFound, ValueError):
         await ctx.send('อย่าใส่มั่วสิ. ใส่ตัวเลขลงไปสิ')
         return await prompt_for_guess(ctx)
+@bot.command(name='rps')
 
+async def rock_paper_scissors(ctx, user_choice):
+    user_choice = user_choice.lower()
+    if user_choice not in ['ค้อน', 'กระดาษ', 'กรรไกร']:
+        await ctx.send('ให้มันดีๆหน่อย. เลือกว่าจะออกอะไร ค้อน, กระดาษ, or กรรไกร.')
+        return
+    bot_choice = random.choice(['ค้อน', 'กระดาษ', 'กรรไกร'])
+    result = determine_winner(user_choice, bot_choice)
+    await ctx.send(f'คุณเลือก {user_choice}, ฉันเลือก {bot_choice}. {result}')
+
+def determine_winner(player, bot):
+    if player == bot:
+        return 'ดันเสมอ!'
+    elif (player == 'ค้อน' and bot == 'กรรไกร') or \
+         (player == 'กระดาษ' and bot == 'ค้อน') or \
+         (player == 'กรรไกร' and bot == 'กระดาษ'):
+        return 'คุณชนะ!'
+    else:
+        return 'ฉันชนะ!'
 
 bot.run(os.getenv("TOKEN"))
