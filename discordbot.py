@@ -4,7 +4,7 @@ import os
 from typing import Optional
 import random
 import asyncio
-
+import datetime
 import nextcord
 from dotenv import load_dotenv
 from nextcord.ext import commands
@@ -63,13 +63,16 @@ async def on_voice_state_update(member, before, after):
     channel_name = "vc-log"  #เปลี่ยนเป็นชื่อตาม Text channel ที่ต้องการส่ง
     channel = nextcord.utils.get(guild.text_channels, name=channel_name)
     voicechannel = bot.get_channel(1173175465113038918) #เปลี่ยนเลขตาม Voice Channel ID
-
+    time1 = datetime.datetime.now()
+    timenow = time1.strftime("%H:%M:%S  -  %d %B %Y")
     if before.channel != after.channel:
         if after.channel is not None and after.channel.id == 1173175465113038918: #เปลี่ยนเลขตาม Voice Channel ID
-            await channel.send(f"{member.name} ได้เข้ามาสู่ {voicechannel.name}")
+            embed = nextcord.Embed(title=f"{member.name} ได้เข้ามาสู่ {voicechannel.name}", description=f"เมื่อเวลา {timenow} \n จะมีใครเข้ามาอยู่เป็นเพื่อนเขาไหมนะ?")
+            await channel.send(embed=embed)
     if before.channel != after.channel:
         if before.channel is not None and before.channel.id == 1173175465113038918: #เปลี่ยนเลขตาม Voice Channel ID
-            await channel.send(f"{member.name} ได้ออกจาก {voicechannel.name}")
+            embed = nextcord.Embed(title=f"{member.name} ออกจาก {voicechannel.name}", description=f"เมื่อเวลา {timenow} \n Bon Voyage ไว้เจอกันใหม่นะเพื่อน")
+            await channel.send(embed=embed)
 
 
 @bot.slash_command(name="play", description="Play Wordle Clone", guild_ids=GUILD_IDS)
