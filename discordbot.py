@@ -35,6 +35,9 @@ GUILD_IDS = (
     else nextcord.utils.MISSING
 )
 
+
+# ========================================== ระบบแจ้งเตือนต่างๆ ==========================================
+
 @bot.event
 async def on_member_join(member):
     """แจ้งเตือนเมื่อคนเข้าเซิฟเวอร์"""
@@ -65,15 +68,17 @@ async def on_voice_state_update(member, before, after):
     voicechannel = bot.get_channel(1173175465113038918) #เปลี่ยนเลขตาม Voice Channel ID
     time1 = datetime.datetime.now()
     timenow = time1.strftime("%H:%M:%S  -  %d %B %Y")
-    if before.channel != after.channel:
+    if before.channel != after.channel: #เข้า
         if after.channel is not None and after.channel.id == 1173175465113038918: #เปลี่ยนเลขตาม Voice Channel ID
             embed = nextcord.Embed(title=f"{member.name} ได้เข้ามาสู่ {voicechannel.name}", description=f"เมื่อเวลา {timenow} \n จะมีใครเข้ามาอยู่เป็นเพื่อนเขาไหมนะ?")
             await channel.send(embed=embed)
-    if before.channel != after.channel:
+    if before.channel != after.channel: #ออก
         if before.channel is not None and before.channel.id == 1173175465113038918: #เปลี่ยนเลขตาม Voice Channel ID
             embed = nextcord.Embed(title=f"{member.name} ออกจาก {voicechannel.name}", description=f"เมื่อเวลา {timenow} \n Bon Voyage ไว้เจอกันใหม่นะเพื่อน")
             await channel.send(embed=embed)
 
+
+# ========================================== ระบบเกม Wordle ==========================================
 
 @bot.slash_command(name="play", description="Play Wordle Clone", guild_ids=GUILD_IDS)
 async def slash_play(interaction: nextcord.Interaction):
@@ -98,6 +103,7 @@ async def slash_play_id(
     interaction: nextcord.Interaction,
     puzzle_id: int = nextcord.SlashOption(description="Puzzle ID of the word to guess"),
 ):
+    """/play id"""
     embed = generate_puzzle_embed(interaction.user, puzzle_id)
     await interaction.send(embed=embed)
 
@@ -134,8 +140,12 @@ async def on_message(message: nextcord.Message):
     if not processed_as_guess:
         await bot.process_commands(message)
 
+
+# ========================================== ระบบเกม BLACKJACK ==========================================
+
 @bot.command(name='bj', help='เล่นแบล็กแจ็คกับบอท')
 async def play_blackjack(ctx):
+    """เกม Blackjack"""
     deck = create_deck()
     player_hand = [draw_card(deck), draw_card(deck)]
     bot_hand = [draw_card(deck), draw_card(deck)]
@@ -160,6 +170,7 @@ async def play_blackjack(ctx):
     await ctx.send(result)
 
 def create_deck():
+    """สร้างเด็คไพ่"""
     ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
     suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
     deck = [{'rank': rank, 'suit': suit} for rank in ranks for suit in suits]
@@ -167,9 +178,11 @@ def create_deck():
     return deck
 
 def draw_card(deck):
+    """สุ่มไพ่"""
     return deck.pop()
 
 async def prompt_for_hit_or_stand(ctx):
+    """เลือก Action"""
     await ctx.send('คุณต้องการที่จะ hit หรือ stand? พิมพ์ `hit` หรือ `stand`.')
     try:
         response = await bot.wait_for('message', timeout=30, check=lambda m: m.author == ctx.author and m.content.lower() in ['hit', 'stand'])
@@ -179,6 +192,7 @@ async def prompt_for_hit_or_stand(ctx):
         return 'stand'
 
 def get_card_value(card):
+    """คำนวนค่าของไพ่"""
     if card["rank"].isdigit():
         return int(card["rank"])
     elif card["rank"] in ['J', 'Q', 'K']:
@@ -187,6 +201,7 @@ def get_card_value(card):
         return 11
 
 def determine_winner(player_hand, bot_hand):
+    """ตัดสินผู้ชนะ"""
     player_sum = sum(get_card_value(card) for card in player_hand)
     bot_sum = sum(get_card_value(card) for card in bot_hand)
 
@@ -201,8 +216,12 @@ def determine_winner(player_hand, bot_hand):
     else:
         return 'เสมอ!'
 
+
+# ========================================== ระบบเกมทายเลข ==========================================
+
 @bot.command(name='start', help='Start a guessing game')
 async def start_guessing_game(ctx):
+    """เกมทายเลข"""
     await ctx.send("ยินดีต้อนรับเข้าสู่เกมส์เดาตัวเลข! เราได้สุ่มตัวเลขเพียง 1 ตัวจากตัวเลข 1 ถึง 100. ลองเดาตัวเลขนั้นดูสิ!")
 
     # สุ่มสร้างเลข 1 ตัวจากเลข 1 ถึง 100
@@ -222,6 +241,7 @@ async def start_guessing_game(ctx):
         await ctx.send(f"โชคไม่ดีเลย หมดโอกาสแล้ว. เลขที่ถูกต้องคือ {secret_number}.")
 
 async def prompt_for_guess(ctx):
+    """ตรวจสอบเลขที่ใส่มา"""
     await ctx.send("ตัวเลขนี้อยู่ระหว่าง 1 ถึง 100:")
     try:
         guess = await bot.wait_for('message', timeout=30, check=lambda m: m.author == ctx.author)
@@ -229,9 +249,13 @@ async def prompt_for_guess(ctx):
     except (nextcord.ext.commands.errors.CommandNotFound, ValueError):
         await ctx.send('อย่าใส่มั่วสิ. ใส่ตัวเลขลงไปสิ')
         return await prompt_for_guess(ctx)
-@bot.command(name='rps')
 
+
+# ========================================== ระบบเกมเป่ายิงฉุบ ==========================================
+
+@bot.command(name='rps')
 async def rock_paper_scissors(ctx, user_choice):
+    """เกมเป่ายิงฉุบ"""
     user_choice = user_choice.lower()
     if user_choice not in ['ค้อน', 'กระดาษ', 'กรรไกร']:
         await ctx.send('ให้มันดีๆหน่อย. เลือกว่าจะออกอะไร ค้อน, กระดาษ, or กรรไกร.')
@@ -241,6 +265,7 @@ async def rock_paper_scissors(ctx, user_choice):
     await ctx.send(f'คุณเลือก {user_choice}, ฉันเลือก {bot_choice}. {result}')
 
 def determine_winner(player, bot):
+    """หาผู้ชนะเป่ายิงฉุบ"""
     if player == bot:
         return 'ดันเสมอ!'
     elif (player == 'ค้อน' and bot == 'กรรไกร') or \
