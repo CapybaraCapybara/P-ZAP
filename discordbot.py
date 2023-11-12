@@ -13,14 +13,15 @@ from utils import (
     random_puzzle_id,
     daily_puzzle_id
 )
-
+intents = nextcord.Intents.default()
+intents.members = True
 logging.basicConfig(level=logging.INFO)
 
 load_dotenv()
 
 activity = nextcord.Activity(type=nextcord.ActivityType.listening, name="/play")
 
-bot = commands.Bot(command_prefix=commands.when_mentioned_or("w?"), activity=activity)
+bot = commands.Bot(command_prefix=commands.when_mentioned_or("w?"), activity=activity, intents=intents)
 
 GUILD_IDS = (
     [int(guild_id) for guild_id in os.getenv("GUILD_IDS", "").split(",")]
