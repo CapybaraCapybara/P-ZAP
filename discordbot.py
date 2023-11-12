@@ -69,6 +69,13 @@ async def slash_play_daily(interaction: nextcord.Interaction):
     embed = generate_puzzle_embed(interaction.user, daily_puzzle_id())
     await interaction.send(embed=embed)
 
+@slash_play.subcommand(name="id", description="Play a game of Wordle Clone by its ID")
+async def slash_play_id(
+    interaction: nextcord.Interaction,
+    puzzle_id: int = nextcord.SlashOption(description="Puzzle ID of the word to guess"),
+):
+    embed = generate_puzzle_embed(interaction.user, puzzle_id)
+    await interaction.send(embed=embed)
 
 @bot.group(invoke_without_command=True)
 async def play(ctx: commands.Context, puzzle_id: Optional[int] = None):
@@ -90,6 +97,11 @@ async def play_daily(ctx: commands.Context):
     embed = generate_puzzle_embed(ctx.author, daily_puzzle_id())
     await ctx.reply(embed=embed, mention_author=False)
 
+@play.command(name="id")
+async def play_id(ctx: commands.Context, puzzle_id: int):
+    """เล่นจาก ID"""
+    embed = generate_puzzle_embed(ctx.author, puzzle_id)
+    await ctx.reply(embed=embed, mention_author=False)
 
 @bot.event
 async def on_message(message: nextcord.Message):
@@ -97,6 +109,5 @@ async def on_message(message: nextcord.Message):
     processed_as_guess = await process_message_as_guess(bot, message)
     if not processed_as_guess:
         await bot.process_commands(message)
-
 
 bot.run(os.getenv("TOKEN"))
