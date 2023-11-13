@@ -1,9 +1,8 @@
+import nextcord
 import datetime
 import random
 import re
 from typing import List, Optional
-
-import nextcord
 
 popular_words = open("dict-popular.txt").read().splitlines()
 all_words = set(word.strip() for word in open("dict-sowpods.txt"))
@@ -118,9 +117,11 @@ def generate_colored_word(guess: str, answer: str) -> str:
             answer_letters[answer_letters.index(guess_letters[i])] = None
     return "".join(colored_word)
 
+
 def generate_blanks() -> str:
     """สร้างอีโมจิปล่าวๆ 5 ตัว"""
     return ":white_medium_square:" * 5
+
 
 def generate_puzzle_embed(user: nextcord.User, puzzle_id: int) -> nextcord.Embed:
     """สร้าง embed สำหรับ puzzle อันใหม่ สำหรับ puzzle id และ user"""
@@ -133,10 +134,9 @@ def generate_puzzle_embed(user: nextcord.User, puzzle_id: int) -> nextcord.Embed
     )
     return embed
 
+
 def update_embed(embed: nextcord.Embed, guess: str) -> nextcord.Embed:
-
-    #อัปเดตคำศัพท์
-
+    """อัปเดตคำศัพท์"""
     puzzle_id = int(embed.footer.text.split()[1])
     answer = popular_words[puzzle_id]
     colored_word = generate_colored_word(guess, answer)
@@ -211,7 +211,7 @@ async def process_message_as_guess(bot: nextcord.Client, message: nextcord.Messa
         embed.author.name != message.author.name
         or embed.author.icon_url != message.author.display_avatar.url
     ):
-        reply = "Start a new game with /play"
+        reply = "เริ่มเกมใหม่ด้วยคำสั่ง /play"
         if embed.author:
             reply = f"This game was started by {embed.author.name}. " + reply
         await message.reply(reply, delete_after=5)
@@ -232,7 +232,6 @@ async def process_message_as_guess(bot: nextcord.Client, message: nextcord.Messa
 
     # ตัด mention สำหรับผู้เล่นออก
     guess = re.sub(r"<@!?\d+>", "", guess).strip()
-
     bot_name = message.guild.me.nick if message.guild and message.guild.me.nick else bot.user.name
 
     if len(guess) == 0:

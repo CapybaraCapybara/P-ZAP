@@ -122,19 +122,18 @@ async def slash_play_id(
     embed = generate_puzzle_embed(interaction.user, puzzle_id)
     await interaction.send(embed=embed)
 
+
 @bot.group(invoke_without_command=True)
 async def play(ctx: commands.Context, puzzle_id: Optional[int] = None):
     """เล่น Wordle game"""
     embed = generate_puzzle_embed(ctx.author, puzzle_id or random_puzzle_id())
     await ctx.reply(embed=embed, mention_author=False)
 
-
 @play.command(name="random")
 async def play_random(ctx: commands.Context):
     """เล่นแบบ Random"""
     embed = generate_puzzle_embed(ctx.author, random_puzzle_id())
     await ctx.reply(embed=embed, mention_author=False)
-
 
 @play.command(name="daily")
 async def play_daily(ctx: commands.Context):
@@ -193,8 +192,6 @@ async def play_blackjack(ctx):
     result, colorbj = determine_winner_bj(player_hand, bot_hand)
     embed = nextcord.Embed(title=f"{result}", color=colorbj)
     await ctx.send(embed=embed)
-
-
 
 def create_deck():
     """สร้างเด็คไพ่"""
@@ -295,6 +292,7 @@ async def prompt_for_guess(ctx, low, high, guesschance):
         return await prompt_for_guess(ctx, low, high, guesschance)
 
 # ========================================== ระบบเกมเป่ายิงฉุบ ==========================================
+
 total_streak = 0
 
 @bot.command(name='rps', help="เกมเป่ายิ้งฉุบ")
