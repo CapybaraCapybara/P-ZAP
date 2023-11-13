@@ -181,7 +181,7 @@ async def play_blackjack(ctx):
 
     await ctx.send(f'ไพ่บอท: {[card["rank"] for card in bot_hand]}')
 
-    result = determine_winner(player_hand, bot_hand)
+    result = determine_winner_bj(player_hand, bot_hand)
     await ctx.send(result)
 
 def create_deck():
@@ -215,7 +215,7 @@ def get_card_value(card):
     elif card["rank"] == 'A':
         return 11
 
-def determine_winner(player_hand, bot_hand):
+def determine_winner_bj(player_hand, bot_hand):
     """ตัดสินผู้ชนะ"""
     player_sum = sum(get_card_value(card) for card in player_hand)
     bot_sum = sum(get_card_value(card) for card in bot_hand)
@@ -291,7 +291,7 @@ async def rock_paper_scissors(ctx, user_choice):
         await ctx.send('ให้มันดีๆหน่อย. เลือกว่าจะออกอะไร ค้อน, กระดาษ, or กรรไกร.')
         return
     bot_choice = random.choice(['ค้อน', 'กระดาษ', 'กรรไกร'])
-    result = determine_winner(user_choice, bot_choice)
+    result = determine_winner_rps(user_choice, bot_choice)
 
     # ตรวจสอบผลลัพธ์และปรับจำนวนการชนะติดต่อกันทั้งหมด
     if result == 'คุณชนะ!':
@@ -303,7 +303,7 @@ async def rock_paper_scissors(ctx, user_choice):
     embed.add_field(name="การชนะติดต่อกันทั้งหมด", value=total_streak)
     await ctx.send(embed=embed)
 
-def determine_winner(player, bot):
+def determine_winner_rps(player, bot):
     """หาผู้ชนะเป่ายิงฉุบ"""
     if player == bot:
         return 'ดันเสมอ!'
