@@ -39,6 +39,18 @@ GUILD_IDS = (
 # ========================================== ระบบแจ้งเตือนต่างๆ ==========================================
 
 @bot.event
+async def on_ready():
+    """แจ้งเตือนใน Terminal VSCode เมื่อบอทออนไลน์และพร้อมใช้งาน"""
+    length1 = (len("Your bot is now online and ready to use"))
+    length2 = (len("( Logged in as -> \"" + str(bot.user) + "\" )"))
+    longest = max(length1, length2)
+
+    print("-" * (longest+4))
+    print("| " + "Your bot is now online and ready to use" + (" " * (longest - length1)) + " |")
+    print("| " + f"( Logged in as -> \"{bot.user}\" )" + (" " * (longest - length2)) + " |")
+    print("-" * (longest+4))
+
+@bot.event
 async def on_member_join(member):
     """แจ้งเตือนเมื่อคนเข้าเซิฟเวอร์"""
     guild = member.guild
