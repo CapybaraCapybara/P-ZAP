@@ -279,17 +279,29 @@ async def prompt_for_guess(ctx, low, high, guesschance):
         return await prompt_for_guess(ctx, low, high, guesschance)
 
 # ========================================== ระบบเกมเป่ายิงฉุบ ==========================================
+total_streak = 0
 
 @bot.command(name='rps', help="เกมเป่ายิ้งฉุบ")
 async def rock_paper_scissors(ctx, user_choice):
     """เกมเป่ายิงฉุบ"""
+    global total_streak
+
     user_choice = user_choice.lower()
     if user_choice not in ['ค้อน', 'กระดาษ', 'กรรไกร']:
         await ctx.send('ให้มันดีๆหน่อย. เลือกว่าจะออกอะไร ค้อน, กระดาษ, or กรรไกร.')
         return
     bot_choice = random.choice(['ค้อน', 'กระดาษ', 'กรรไกร'])
     result = determine_winner(user_choice, bot_choice)
-    await ctx.send(f'คุณเลือก {user_choice}, ฉันเลือก {bot_choice}. {result}')
+
+    # ตรวจสอบผลลัพธ์และปรับจำนวนการชนะติดต่อกันทั้งหมด
+    if result == 'คุณชนะ!':
+        total_streak += 1
+    else:
+        total_streak = 0  # รีเซ็ตจำนวนการชนะเมื่อแพ้
+
+    embed = nextcord.Embed(title=f"คุณเลือก {user_choice}, ฉันเลือก {bot_choice}", description=f"{result}")
+    embed.add_field(name="การชนะติดต่อกันทั้งหมด", value=total_streak)
+    await ctx.send(embed=embed)
 
 def determine_winner(player, bot):
     """หาผู้ชนะเป่ายิงฉุบ"""
