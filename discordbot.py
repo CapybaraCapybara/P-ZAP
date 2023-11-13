@@ -237,15 +237,17 @@ def determine_winner(player_hand, bot_hand):
 @bot.command(name='gnum', help='เล่นเกมทายตัวเลข')
 async def start_guessing_game(ctx):
     """เกมทายเลข"""
-    await ctx.send("ยินดีต้อนรับเข้าสู่เกมส์เดาตัวเลข! เราได้สุ่มตัวเลขเพียง 1 ตัวจากตัวเลข 1 ถึง 100. ลองเดาตัวเลขนั้นดูสิ!")
+    await ctx.send("ยินดีต้อนรับเข้าสู่เกมส์เดาตัวเลข!")
+    await ctx.send("เราได้สุ่มตัวเลขเพียง 1 ตัวจากตัวเลข 1 ถึง 100. ลองเดาตัวเลขนั้นดูสิ! แต่มีข้อแม้ว่าให้เดาได้แค่ 7 ครั้งนะ")
 
     # สุ่มสร้างเลข 1 ตัวจากเลข 1 ถึง 100
     secret_number = random.randint(1, 100)
 
     # ให้ผู้เล่นสุ่มคำตอบได้ 7 ครั้ง
+    guesschance = 7
     low, high = 1, 100
     for _ in range(7):
-        guess = await prompt_for_guess(ctx, low, high)
+        guess = await prompt_for_guess(ctx, low, high, guesschance)
         if guess == secret_number:
             await ctx.send(f"ยินดีด้วย! เดาได้ถูกต้อง ตัวเลขนั้นคือ : {secret_number}")
             break
@@ -255,12 +257,14 @@ async def start_guessing_game(ctx):
         else:
             high = guess - 1
             await ctx.send("สูงไปนะ! ลองเดาอีกที")
+        guesschance -= 1
     else:
         await ctx.send(f"โชคไม่ดีเลย หมดโอกาสแล้ว. เลขที่ถูกต้องคือ {secret_number}.")
 
-async def prompt_for_guess(ctx, low, high):
+async def prompt_for_guess(ctx, low, high, guesschance):
     """ตรวจสอบเลขที่ใส่มาและส่งกลับช่วงของตัวเลขที่เหลือ"""
     await ctx.send(f"ตัวเลขนี้อยู่ระหว่าง {low} ถึง {high}:")
+    await ctx.send(f"เหลือโอกาสเดาอีก {guesschance} ครั้ง!")
     try:
         guess = await bot.wait_for('message', timeout=30, check=lambda m: m.author == ctx.author)
         guess_number = int(guess.content)
@@ -268,10 +272,10 @@ async def prompt_for_guess(ctx, low, high):
             return guess_number
         else:
             await ctx.send("อยู่นอกช่วงที่ถูกต้อง ลองเดาใหม่อีกครั้ง")
-            return await prompt_for_guess(ctx, low, high)
+            return await prompt_for_guess(ctx, low, high, guesschance)
     except (nextcord.ext.commands.errors.CommandNotFound, ValueError):
         await ctx.send('อย่าใส่มั่วสิ! ใส่ตัวเลขลงไปสิ')
-        return await prompt_for_guess(ctx, low, high)
+        return await prompt_for_guess(ctx, low, high, guesschance)
 
 # ========================================== ระบบเกมเป่ายิงฉุบ ==========================================
 
