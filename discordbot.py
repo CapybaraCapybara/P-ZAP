@@ -237,8 +237,8 @@ def determine_winner(player_hand, bot_hand):
 @bot.command(name='gnum', help='เล่นเกมทายตัวเลข')
 async def start_guessing_game(ctx):
     """เกมทายเลข"""
-    await ctx.send("ยินดีต้อนรับเข้าสู่เกมส์เดาตัวเลข!")
-    await ctx.send("เราได้สุ่มตัวเลขเพียง 1 ตัวจากตัวเลข 1 ถึง 100. ลองเดาตัวเลขนั้นดูสิ! แต่มีข้อแม้ว่าให้เดาได้แค่ 7 ครั้งนะ")
+    embed = nextcord.Embed(title=f"ยินดีต้อนรับเข้าสู่เกมส์เดาตัวเลข!", description=f"เราได้สุ่มตัวเลขเพียง 1 ตัวจากตัวเลข 1 ถึง 100. \n ลองเดาตัวเลขนั้นดูสิ! แต่มีข้อแม้ว่าให้เดาได้แค่ 7 ครั้งนะ")
+    await ctx.send(embed=embed)
 
     # สุ่มสร้างเลข 1 ตัวจากเลข 1 ถึง 100
     secret_number = random.randint(1, 100)
@@ -263,8 +263,9 @@ async def start_guessing_game(ctx):
 
 async def prompt_for_guess(ctx, low, high, guesschance):
     """ตรวจสอบเลขที่ใส่มาและส่งกลับช่วงของตัวเลขที่เหลือ"""
-    await ctx.send(f"ตัวเลขนี้อยู่ระหว่าง {low} ถึง {high}:")
-    await ctx.send(f"เหลือโอกาสเดาอีก {guesschance} ครั้ง!")
+    embed = nextcord.Embed(title=f"ตัวเลขนี้อยู่ระหว่าง {low} ถึง {high}:", description=f"เหลือโอกาสเดาอีก {guesschance} ครั้ง!")
+    await ctx.send(embed=embed)
+
     try:
         guess = await bot.wait_for('message', timeout=30, check=lambda m: m.author == ctx.author)
         guess_number = int(guess.content)
