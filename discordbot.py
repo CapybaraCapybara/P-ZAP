@@ -301,10 +301,16 @@ async def rock_paper_scissors(ctx, user_choice):
     global total_streak
 
     user_choice = user_choice.lower()
-    if user_choice not in ['ค้อน', 'กระดาษ', 'กรรไกร']:
+    if user_choice not in ['ค้อน', 'กระดาษ', 'กรรไกร', 'rock', 'paper', 'scissors']:
         await ctx.send('ให้มันดีๆหน่อย. เลือกว่าจะออกอะไร ค้อน, กระดาษ, or กรรไกร.')
         return
     bot_choice = random.choice(['ค้อน', 'กระดาษ', 'กรรไกร'])
+    if user_choice == 'rock':
+        user_choice = 'ค้อน'
+    if user_choice == 'paper':
+        user_choice = 'กระดาษ'
+    if user_choice == 'scissors':
+        user_choice = 'กรรไกร'
     result, colorrps = determine_winner_rps(user_choice, bot_choice)
 
     # ตรวจสอบผลลัพธ์และปรับจำนวนการชนะติดต่อกันทั้งหมด
