@@ -263,7 +263,8 @@ async def start_guessing_game(ctx):
     for _ in range(7):
         guess = await prompt_for_guess(ctx, low, high, guesschance)
         if guess == secret_number:
-            await ctx.send(f"ยินดีด้วย! เดาได้ถูกต้อง ตัวเลขนั้นคือ : {secret_number}")
+            embed = nextcord.Embed(title="ยินดีด้วย! เดาได้ถูกต้อง", description=f"ตัวเลขนั้นคือ : {secret_number}", color=0x04ff00)
+            await ctx.send(embed=embed)
             break
         elif guess < secret_number:
             low = guess + 1
@@ -274,6 +275,8 @@ async def start_guessing_game(ctx):
         guesschance -= 1
     else:
         await ctx.send(f"โชคไม่ดีเลย หมดโอกาสแล้ว. เลขที่ถูกต้องคือ {secret_number}.")
+        embed = nextcord.Embed(title="โชคไม่ดีเลย หมดโอกาสแล้ว", description=f"เลขที่ถูกต้องคือ {secret_number}", color=0xff0000)
+        await ctx.send(embed=embed)
 
 async def prompt_for_guess(ctx, low, high, guesschance):
     """ตรวจสอบเลขที่ใส่มาและส่งกลับช่วงของตัวเลขที่เหลือ"""
@@ -286,7 +289,7 @@ async def prompt_for_guess(ctx, low, high, guesschance):
         if low <= guess_number <= high:
             return guess_number
         else:
-            await ctx.send("อยู่นอกช่วงที่ถูกต้อง ลองเดาใหม่อีกครั้ง")
+            await ctx.send("อยู่นอกช่วงที่ถูกต้อง ลองเดาใหม่อีกครั้ง!")
             return await prompt_for_guess(ctx, low, high, guesschance)
     except (nextcord.ext.commands.errors.CommandNotFound, ValueError):
         await ctx.send('อย่าใส่มั่วสิ! ใส่ตัวเลขลงไปสิ')
