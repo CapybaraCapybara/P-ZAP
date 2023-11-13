@@ -190,8 +190,8 @@ async def play_blackjack(ctx):
     embed = nextcord.Embed(title=f"ไพ่ของบอท: {bot_cards}")
     await ctx.send(embed=embed)
 
-    result = determine_winner_bj(player_hand, bot_hand)
-    embed = nextcord.Embed(title=f"{result}")
+    result, colorbj = determine_winner_bj(player_hand, bot_hand)
+    embed = nextcord.Embed(title=f"{result}", color=colorbj)
     await ctx.send(embed=embed)
 
 
@@ -235,15 +235,15 @@ def determine_winner_bj(player_hand, bot_hand):
     bot_sum = sum(get_card_value(card) for card in bot_hand)
 
     if player_sum > 21:
-        return 'คุณแต้มเกิน! บอทชนะ 💔'
+        return 'คุณแต้มเกิน! บอทชนะ 💔', 0xff0000
     elif bot_sum > 21:
-        return 'บอทแต้มเกิน! คุณชนะ! 🎉'
+        return 'บอทแต้มเกิน! คุณชนะ! 🎉,', 0x04ff00
     elif player_sum > bot_sum:
-        return 'คุณชนะ! 🎉'
+        return 'คุณชนะ! 🎉,', 0x04ff00
     elif player_sum < bot_sum:
-        return 'บอทชนะ 💔'
+        return 'บอทชนะ 💔', 0xff0000
     else:
-        return 'เสมอ!🤯'
+        return 'เสมอ!🤯,', 0x787878
 
 
 # ========================================== ระบบเกมทายเลข ==========================================
@@ -274,7 +274,6 @@ async def start_guessing_game(ctx):
             await ctx.send("สูงไปนะ! ลองเดาอีกที")
         guesschance -= 1
     else:
-        await ctx.send(f"โชคไม่ดีเลย หมดโอกาสแล้ว. เลขที่ถูกต้องคือ {secret_number}.")
         embed = nextcord.Embed(title="โชคไม่ดีเลย หมดโอกาสแล้ว", description=f"เลขที่ถูกต้องคือ {secret_number}", color=0xff0000)
         await ctx.send(embed=embed)
 
