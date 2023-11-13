@@ -243,28 +243,35 @@ async def start_guessing_game(ctx):
     secret_number = random.randint(1, 100)
 
     # ให้ผู้เล่นสุ่มคำตอบได้ 7 ครั้ง
+    low, high = 1, 100
     for _ in range(7):
-        guess = await prompt_for_guess(ctx)
+        guess = await prompt_for_guess(ctx, low, high)
         if guess == secret_number:
             await ctx.send(f"ยินดีด้วย! เดาได้ถูกต้อง ตัวเลขนั้นคือ : {secret_number}")
             break
         elif guess < secret_number:
+            low = guess + 1
             await ctx.send("ต่ำไปนะ! ลองเดาอีกที")
         else:
+            high = guess - 1
             await ctx.send("สูงไปนะ! ลองเดาอีกที")
     else:
         await ctx.send(f"โชคไม่ดีเลย หมดโอกาสแล้ว. เลขที่ถูกต้องคือ {secret_number}.")
 
-async def prompt_for_guess(ctx):
-    """ตรวจสอบเลขที่ใส่มา"""
-    await ctx.send("ตัวเลขนี้อยู่ระหว่าง 1 ถึง 100:")
+async def prompt_for_guess(ctx, low, high):
+    """ตรวจสอบเลขที่ใส่มาและส่งกลับช่วงของตัวเลขที่เหลือ"""
+    await ctx.send(f"ตัวเลขนี้อยู่ระหว่าง {low} ถึง {high}:")
     try:
         guess = await bot.wait_for('message', timeout=30, check=lambda m: m.author == ctx.author)
-        return int(guess.content)
+        guess_number = int(guess.content)
+        if low <= guess_number <= high:
+            return guess_number
+        else:
+            await ctx.send("อยู่นอกช่วงที่ถูกต้อง ลองเดาใหม่อีกครั้ง")
+            return await prompt_for_guess(ctx, low, high)
     except (nextcord.ext.commands.errors.CommandNotFound, ValueError):
-        await ctx.send('อย่าใส่มั่วสิ. ใส่ตัวเลขลงไปสิ')
-        return await prompt_for_guess(ctx)
-
+        await ctx.send('อย่าใส่มั่วสิ! ใส่ตัวเลขลงไปสิ')
+        return await prompt_for_guess(ctx, low, high)
 
 # ========================================== ระบบเกมเป่ายิงฉุบ ==========================================
 
