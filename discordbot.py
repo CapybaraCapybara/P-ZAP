@@ -308,7 +308,7 @@ async def rock_paper_scissors(ctx, user_choice):
         await ctx.send('ให้มันดีๆหน่อย. เลือกว่าจะออกอะไร ค้อน, กระดาษ, or กรรไกร.')
         return
     bot_choice = random.choice(['ค้อน', 'กระดาษ', 'กรรไกร'])
-    result = determine_winner_rps(user_choice, bot_choice)
+    result, colorrps = determine_winner_rps(user_choice, bot_choice)
 
     # ตรวจสอบผลลัพธ์และปรับจำนวนการชนะติดต่อกันทั้งหมด
     if result == 'คุณชนะ!':
@@ -316,19 +316,19 @@ async def rock_paper_scissors(ctx, user_choice):
     else:
         total_streak = 0  # รีเซ็ตจำนวนการชนะเมื่อแพ้
 
-    embed = nextcord.Embed(title=f"คุณเลือก {user_choice}, ฉันเลือก {bot_choice}", description=f"{result}")
+    embed = nextcord.Embed(title=f"คุณเลือก {user_choice}, ฉันเลือก {bot_choice}", description=f"{result}", color=colorrps)
     embed.add_field(name="การชนะติดต่อกันทั้งหมด", value=total_streak)
     await ctx.send(embed=embed)
 
 def determine_winner_rps(player, bot):
     """หาผู้ชนะเป่ายิงฉุบ"""
     if player == bot:
-        return 'ดันเสมอ!'
+        return 'ดันเสมอ!', 0x787878
     elif (player == 'ค้อน' and bot == 'กรรไกร') or \
          (player == 'กระดาษ' and bot == 'ค้อน') or \
          (player == 'กรรไกร' and bot == 'กระดาษ'):
-        return 'คุณชนะ!'
+        return 'คุณชนะ!', 0x04ff00
     else:
-        return 'ฉันชนะ!'
+        return 'ฉันชนะ!', 0xff0000
 
 bot.run(os.getenv("TOKEN"))
