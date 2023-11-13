@@ -165,24 +165,36 @@ async def play_blackjack(ctx):
     player_hand = [draw_card(deck), draw_card(deck)]
     bot_hand = [draw_card(deck), draw_card(deck)]
 
-    await ctx.send(f'ไพ่ของคุณ: {[card["rank"] for card in player_hand]}')
-    await ctx.send(f"ไพ่บอท: {bot_hand[0]['rank']} และหมอบไว้อีก 1 ใบ.")
+    player_card = [card["rank"] for card in player_hand]
+    bot_card = bot_hand[0]['rank']
+
+    embed = nextcord.Embed(title=f"ไพ่ของคุณ: {player_card}")
+    await ctx.send(embed=embed)
+    embed = nextcord.Embed(title=f"ไพ่ของบอท: {bot_card}", description=f"และหมอบไว้อีก 1 ใบ.")
+    await ctx.send(embed=embed)
 
     while sum(get_card_value(card) for card in player_hand) < 21:
         hit_or_stand = await prompt_for_hit_or_stand(ctx)
         if hit_or_stand.lower() == 'hit':
             player_hand.append(draw_card(deck))
-            await ctx.send(f'ไพ่ของคุณ: {[card["rank"] for card in player_hand]}')
+            player_card = [card["rank"] for card in player_hand]
+            embed = nextcord.Embed(title=f"ไพ่ของคุณ: {player_card}")
+            await ctx.send(embed=embed)
         else:
             break
 
     while sum(get_card_value(card) for card in bot_hand) < 17:
         bot_hand.append(draw_card(deck))
 
-    await ctx.send(f'ไพ่บอท: {[card["rank"] for card in bot_hand]}')
+    bot_cards = [card["rank"] for card in bot_hand]
+    embed = nextcord.Embed(title=f"ไพ่ของบอท: {bot_cards}")
+    await ctx.send(embed=embed)
 
     result = determine_winner_bj(player_hand, bot_hand)
-    await ctx.send(result)
+    embed = nextcord.Embed(title=f"{result}")
+    await ctx.send(embed=embed)
+
+
 
 def create_deck():
     """สร้างเด็คไพ่"""
@@ -198,12 +210,14 @@ def draw_card(deck):
 
 async def prompt_for_hit_or_stand(ctx):
     """เลือก Action"""
-    await ctx.send('คุณต้องการที่จะ hit หรือ stand? พิมพ์ `hit` หรือ `stand`.')
+    embed = nextcord.Embed(title="คุณต้องการที่จะ hit หรือ stand?", description="พิมพ์ `hit` หรือ `stand`.")
+    await ctx.send(embed=embed)
     try:
         response = await bot.wait_for('message', timeout=30, check=lambda m: m.author == ctx.author and m.content.lower() in ['hit', 'stand'])
         return response.content.lower()
     except asyncio.TimeoutError:
-        await ctx.send('หมดเวลา, คุณเลือก stand')
+        embed = nextcord.Embed(title="หมดเวลา", description="คุณเลือก stand")
+        await ctx.send(embed=embed)
         return 'stand'
 
 def get_card_value(card):
@@ -221,15 +235,15 @@ def determine_winner_bj(player_hand, bot_hand):
     bot_sum = sum(get_card_value(card) for card in bot_hand)
 
     if player_sum > 21:
-        return 'คุณแต้มเกิน! บอทชนะ'
+        return 'คุณแต้มเกิน! บอทชนะ 💔'
     elif bot_sum > 21:
-        return 'บอทแต้มเกิน! คุณชนะ'
+        return 'บอทแต้มเกิน! คุณชนะ! 🎉'
     elif player_sum > bot_sum:
-        return 'คุณชนะ!'
+        return 'คุณชนะ! 🎉'
     elif player_sum < bot_sum:
-        return 'บอทชนะ'
+        return 'บอทชนะ 💔'
     else:
-        return 'เสมอ!'
+        return 'เสมอ!🤯'
 
 
 # ========================================== ระบบเกมทายเลข ==========================================
