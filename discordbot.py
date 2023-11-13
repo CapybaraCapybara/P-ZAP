@@ -1,13 +1,13 @@
 """Discord Bot [Salapakjai] by P-ZAP"""
+import nextcord
+from dotenv import load_dotenv
+from nextcord.ext import commands
 import logging
 import os
 from typing import Optional
 import random
 import asyncio
 import datetime
-import nextcord
-from dotenv import load_dotenv
-from nextcord.ext import commands
 
 from utils import (
     generate_puzzle_embed,
